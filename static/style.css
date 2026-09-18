@@ -1,0 +1,177 @@
+/* MD FUAR TAKİP SİSTEMİ - Kurumsal Mobil Web Stilleri */
+:root {
+    --navy: #0D2C3A;
+    --navy-header: #08161E;
+    --orange: #D9531E;
+    --orange-hover: #B84113;
+    --bg-body: #F4F6F8;
+    --card-bg: #FFFFFF;
+    --text-main: #1A252C;
+    --border-color: #E2E8F0;
+    --stat-bg: #163A4D;
+    --orange-light: #FFF3E0;
+}
+
+body.dark-mode {
+    --navy: #08161E;
+    --navy-header: #040B0F;
+    --orange: #F26522;
+    --orange-hover: #D84A07;
+    --bg-body: #10202A;
+    --card-bg: #182C38;
+    --text-main: #E8ECEF;
+    --border-color: #2C3E50;
+    --stat-bg: #0D1E28;
+    --orange-light: #332616;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.header-navy {
+    background-color: var(--navy-header) !important;
+}
+
+.bg-navy {
+    background-color: var(--navy) !important;
+}
+
+.bg-card-header {
+    background-color: rgba(13, 44, 58, 0.05);
+}
+
+body.dark-mode .bg-card-header {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.text-navy {
+    color: var(--navy) !important;
+}
+
+body.dark-mode .text-navy {
+    color: #E8ECEF !important;
+}
+
+.text-orange {
+    color: var(--orange) !important;
+}
+
+.btn-orange {
+    background-color: var(--orange) !important;
+    border-color: var(--orange) !important;
+    color: #ffffff !important;
+}
+
+.btn-orange:hover, .btn-orange:active {
+    background-color: var(--orange-hover) !important;
+    border-color: var(--orange-hover) !important;
+}
+
+.card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+.form-control, .form-select {
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--orange) !important;
+    box-shadow: 0 0 0 0.25rem rgba(217, 83, 30, 0.25) !important;
+}
+
+.bg-orange-light {
+    background-color: var(--orange-light) !important;
+}
+
+.border-orange {
+    border-color: var(--orange) !important;
+}
+
+/* Takvim Izgarası */
+.grid-calendar-header, .grid-calendar {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+
+.day-btn {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px;
+    font-size: 0.9rem;
+    transition: all 0.15s ease;
+}
+
+.day-btn:hover {
+    background-color: var(--orange);
+    color: white !important;
+}
+
+.day-btn.selected {
+    background-color: var(--navy) !important;
+    color: white !important;
+    border-color: var(--orange) !important;
+    box-shadow: 0 0 0 2px var(--orange);
+}
+
+.day-btn.today {
+    border: 2px solid var(--orange) !important;
+    color: var(--orange);
+}
+
+.day-badge {
+    font-size: 0.6rem;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.card-stat {
+    background-color: var(--stat-bg) !important;
+}
+
+.text-sub {
+    color: #B0C4DE !important;
+    font-size: 0.75rem;
+}
+
+.modal-content {
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+}
+
+.table {
+    color: var(--text-main) !important;
+}
+
+.fs-8 {
+    font-size: 0.75rem;
+}
+
+/* Mobil için büyük dokunmatik alanlar */
+@media (max-width: 576px) {
+    .btn-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1.1rem;
+    }
+    .day-btn {
+        font-size: 0.85rem;
+    }
+}

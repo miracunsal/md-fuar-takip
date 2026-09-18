@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+test_*.db
+dist/
+build/
+*.spec
+temp_exports/
+.vscode/
+.idea/
