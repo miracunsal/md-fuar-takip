@@ -4,41 +4,58 @@ import shutil
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.environ.get("DATABASE_PATH", os.path.join(BASE_DIR, "md_fuar.db"))
-BACKUP_DIR = os.environ.get("BACKUP_DIR", os.path.join(BASE_DIR, "backups"))
+default_db_path = os.path.join(BASE_DIR, "md_fuar.db")
+
+# Eğer klasör yazılabilir değilse (Bulut / Linux izinleri), /tmp klasörüne yaz
+try:
+    test_file = os.path.join(BASE_DIR, ".perm_test")
+    with open(test_file, "w") as f:
+        f.write("1")
+    os.remove(test_file)
+except Exception:
+    default_db_path = "/tmp/md_fuar.db"
+
+DB_PATH = os.environ.get("DATABASE_PATH", default_db_path)
+BACKUP_DIR = os.environ.get("BACKUP_DIR", os.path.join(os.path.dirname(DB_PATH), "backups"))
 
 def get_connection():
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS daily_records (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            record_date TEXT UNIQUE NOT NULL,
-            firm_name TEXT DEFAULT '',
-            yovmiye REAL DEFAULT 0,
-            amount_received REAL DEFAULT 0,
-            worker_expense REAL DEFAULT 0,
-            net_profit REAL DEFAULT 0,
-            payment_status TEXT DEFAULT 'PAID',
-            notes TEXT DEFAULT '',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    
-    # Sütun Kontrolü (payment_status yoksa ekle - Schema Migration)
-    cursor.execute("PRAGMA table_info(daily_records)")
-    columns = [row[1] for row in cursor.fetchall()]
-    if "payment_status" not in columns:
-        cursor.execute("ALTER TABLE daily_records ADD COLUMN payment_status TEXT DEFAULT 'PAID'")
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS daily_records (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                record_date TEXT UNIQUE NOT NULL,
+                firm_name TEXT DEFAULT '',
+                yovmiye REAL DEFAULT 0,
+                amount_received REAL DEFAULT 0,
+                worker_expense REAL DEFAULT 0,
+                net_profit REAL DEFAULT 0,
+                payment_status TEXT DEFAULT 'PAID',
+                notes TEXT DEFAULT '',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         
-    conn.commit()
-    conn.close()
+        # Sütun Kontrolü (payment_status yoksa ekle - Schema Migration)
+        cursor.execute("PRAGMA table_info(daily_records)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "payment_status" not in columns:
+            cursor.execute("ALTER TABLE daily_records ADD COLUMN payment_status TEXT DEFAULT 'PAID'")
+            
+        conn.commit()
+        conn.close()
+    except Exception as ex:
+        print("init_db hatası:", ex)
 
 def save_or_update_record(record_date, firm_name, yovmiye, amount_received, worker_expense, payment_status="PAID", notes=""):
     net_profit = float(amount_received or 0) - float(worker_expense or 0)
