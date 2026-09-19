@@ -160,22 +160,26 @@ def get_weekly_records(start_date_str, end_date_str, firm_name=None):
     return [dict(row) for row in rows]
 
 def auto_backup_db():
-    if not os.path.exists(DB_PATH):
+    try:
+        if not os.path.exists(DB_PATH):
+            return None
+        
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_file = os.path.join(BACKUP_DIR, f"md_fuar_backup_{timestamp}.db")
+        
+        shutil.copy2(DB_PATH, backup_file)
+        
+        # Son 30 yedekten eskisini temizle
+        backups = sorted([os.path.join(BACKUP_DIR, f) for f in os.listdir(BACKUP_DIR) if f.endswith(".db")])
+        if len(backups) > 30:
+            for old_backup in backups[:-30]:
+                try:
+                    os.remove(old_backup)
+                except Exception as e:
+                    print("Eski yedek silme hatası:", e)
+                    
+        return backup_file
+    except Exception as ex:
+        print("Auto backup notice:", ex)
         return None
-    
-    os.makedirs(BACKUP_DIR, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_file = os.path.join(BACKUP_DIR, f"md_fuar_backup_{timestamp}.db")
-    
-    shutil.copy2(DB_PATH, backup_file)
-    
-    # Son 30 yedekten eskisini temizle
-    backups = sorted([os.path.join(BACKUP_DIR, f) for f in os.listdir(BACKUP_DIR) if f.endswith(".db")])
-    if len(backups) > 30:
-        for old_backup in backups[:-30]:
-            try:
-                os.remove(old_backup)
-            except Exception as e:
-                print("Eski yedek silme hatası:", e)
-                
-    return backup_file
